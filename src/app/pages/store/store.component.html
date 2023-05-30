@@ -1,1 +1,23 @@
-<p>store works!</p>
+<div *ngIf="!this.notFound && this.clienteEmpresa">
+  <app-portada
+    *ngIf="this.empresa"
+    [urlPortada]="this.empresa.configuracionEmpresaDto.urlPortada"
+    [urlLogo]="this.empresa.configuracionEmpresaDto.urlLogo"
+    [nombre]="this.empresa.nombre"
+    [numeroWhatsapp]="this.empresa.numeroWhatsapp"
+    [urlFacebook]="this.empresa.urlFacebook"
+    [urlInstagram]="this.empresa.urlInstagram"
+  >
+  </app-portada>
+
+  <div ngClass="m-5">
+    <app-categoria
+      [listaCategorias]="this.categorias"
+      [listaProductos]="this.productos"
+    ></app-categoria>
+  </div>
+</div>
+
+<div *ngIf="this.notFound" class="not-found">
+  <app-not-found></app-not-found>
+</div>
