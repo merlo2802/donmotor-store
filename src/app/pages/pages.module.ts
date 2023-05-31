@@ -6,6 +6,7 @@ import { PagesRoutingModule } from './pages-routing.module';
 import { SharedModule } from "../shared/shared.module";
 import { StoreComponent } from './store/store.component';
 import { ExtrapagesModule } from '../extrapages/extrapages.module';
+import { VendorModule } from './vendor/vendor.module';
 
 
 @NgModule({
@@ -16,7 +17,8 @@ import { ExtrapagesModule } from '../extrapages/extrapages.module';
     CommonModule,
     PagesRoutingModule,
     SharedModule,
-    ExtrapagesModule
+    ExtrapagesModule,
+    VendorModule
   ]
 })
 export class PagesModule { }

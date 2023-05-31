@@ -3,7 +3,18 @@
 // The list of file replacements can be found in `angular.json`.
 
 export const environment = {
-  production: false
+  production: false,
+  urlApii: 'http://localhost:9443/api',
+  aws: 'https://4sd-fabrica-ecommerce.s3.amazonaws.com/',
+  eureka: 'http://localhost:9443',
+
+  landing: {
+    numeroContacto: '+59161335547',
+    mensajeContacto: 'Hola me gustaria subscribir mi Negocio a Eureka'
+  },
+
+  numeroPais: '+591',
+
 };
 
 /*

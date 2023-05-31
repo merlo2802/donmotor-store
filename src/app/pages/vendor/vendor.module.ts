@@ -62,6 +62,9 @@ const DEFAULT_DROPZONE_CONFIG: DropzoneConfigInterface = {
       provide: DROPZONE_CONFIG,
       useValue: DEFAULT_DROPZONE_CONFIG
     }
+  ],
+  exports: [
+    VendorComponent
   ]
 })
 export class VendorModule { }

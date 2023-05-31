@@ -1,7 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { Meta, Title } from '@angular/platform-browser';
 import { Router } from '@angular/router';
+import { error } from 'console';
 import { Digitec } from 'src/app/core/digitec-class/digitec';
+import { StoreService } from 'src/app/core/services/store.service';
 
 @Component({
   selector: 'app-store',
@@ -20,6 +22,7 @@ export class StoreComponent  extends Digitec implements OnInit {
     private router: Router,
     private title: Title,
     private meta: Meta,
+    private storeService: StoreService,
   ) {
     super();
     this.pathName = location.pathname;
@@ -27,57 +30,58 @@ export class StoreComponent  extends Digitec implements OnInit {
 
   ngOnInit(): void {
     if (this.pathName.length > 1) {
-      const urlPersonalizada: string = this.pathName.substring(1);
-      this.obtenerDatosEmpresa(urlPersonalizada);
+      const urlEnterprise: string = this.pathName.substring(1);
+      this.getDataEnterprise(urlEnterprise);
     }
   }
 
-  private obtenerDatosEmpresa(url: string) {
-    console.log(url);
-    this.notFound = true;
-    this.clienteEmpresa = {
-      name : "store 1"
-    }
+  private getDataEnterprise(urlEnterprise: string):void {
+    this.storeService.getEnterprise(urlEnterprise).subscribe({
+      complete: (resp: any) => {
+
+      },
+      error: (error)=> {
+
+      }
+    });
+      resp => {
+        const empresa = resp.body;
+        if(empresa){
+          this.empresa = this.toEmpresaDto(empresa)
+          this.title.setTitle(this.empresa.nombre);
+          const color = this.empresa.configuracionEmpresaDto.colorSeccion ? this.empresa.configuracionEmpresaDto.colorSeccion : '#ed5725';
+          this.meta.updateTag({ content:  color }, 'name=theme-color');
+          this.eurekaService.obtenerCategorias(this.empresa.id).subscribe(respC => {
+            const categorias = respC.body;
+            if (categorias) {
+              this.categorias = this.toCategoriasDto(categorias);
+              this.eurekaService.obtenerProductos(this.empresa.id).subscribe(responseP => {
+                if (responseP) {
+                  const productos = responseP.body;
+                  this.productos = this.toProductosDto(productos);
+                  this.clienteEmpresa = {
+                    empresaDto: this.empresa,
+                    categoriaDtoList: this.categorias,
+                    productoDtoList: this.productos
+                  };
+                  this.encriptarDatos(this.empresa, Llaves.dataEmpresa, Llaves.claveEncriptacion);
+                }
+              }, error => {
+                console.log('error al obtener los productos de la empresa id', this.empresa.id);
+              });
+            }
+          }, error => {
+            console.log('error al obtener las categorias de la empresa id', this.empresa.id);
+          })
+        }else {
+          this.notFound = true;
+          console.log('no hay ninuna empresa:  ', urlPersonalizada);
+        }
+      }, error => {
+        console.log('error al obtener la empresa en la ruta ', urlEnterprise);
+    });
   }
 
-  // private obtenerDatosEmpresa(urlPersonalizada: string):void {
-  //   this.eurekaService.obtenerEmpresa(urlPersonalizada).subscribe(resp => {
-  //       const empresa = resp.body;
-  //       if(empresa){
-  //         this.empresa = this.toEmpresaDto(empresa)
-  //         this.title.setTitle(this.empresa.nombre);
-  //         const color = this.empresa.configuracionEmpresaDto.colorSeccion ? this.empresa.configuracionEmpresaDto.colorSeccion : '#ed5725';
-  //         this.meta.updateTag({ content:  color }, 'name=theme-color');
-  //         this.eurekaService.obtenerCategorias(this.empresa.id).subscribe(respC => {
-  //           const categorias = respC.body;
-  //           if (categorias) {
-  //             this.categorias = this.toCategoriasDto(categorias);
-  //             this.eurekaService.obtenerProductos(this.empresa.id).subscribe(responseP => {
-  //               if (responseP) {
-  //                 const productos = responseP.body;
-  //                 this.productos = this.toProductosDto(productos);
-  //                 this.clienteEmpresa = {
-  //                   empresaDto: this.empresa,
-  //                   categoriaDtoList: this.categorias,
-  //                   productoDtoList: this.productos
-  //                 };
-  //                 this.encriptarDatos(this.empresa, Llaves.dataEmpresa, Llaves.claveEncriptacion);
-  //               }
-  //             }, error => {
-  //               console.log('error al obtener los productos de la empresa id', this.empresa.id);
-  //             });
-  //           }
-  //         }, error => {
-  //           console.log('error al obtener las categorias de la empresa id', this.empresa.id);
-  //         })
-  //       }else {
-  //         this.notFound = true;
-  //         console.log('no hay ninuna empresa:  ', urlPersonalizada);
-  //       }
-  //     }, error => {
-  //       console.log('error al obtener la empresa en la ruta ', urlPersonalizada);
-  //   });
-  // }
 
   // private obtenerDatosDeEmpresa(urlPersonalizada: string): void {
   //   this.eurekaClienteService.obtenerEmpresa(urlPersonalizada).subscribe((response) => {
