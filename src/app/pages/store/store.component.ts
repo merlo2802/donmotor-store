@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Meta, Title } from '@angular/platform-browser';
 import { Router } from '@angular/router';
-import { Digitec } from 'src/app/core/digitec-class/eureka';
+import { Digitec } from 'src/app/core/digitec-class/digitec';
 
 @Component({
   selector: 'app-store',
@@ -11,7 +11,7 @@ import { Digitec } from 'src/app/core/digitec-class/eureka';
 export class StoreComponent  extends Digitec implements OnInit {
   public notFound: boolean = false;
   private pathName: string;
-  // public clienteEmpresa: EurekaClienteDto;
+  public clienteEmpresa: any;
   // public empresa: EmpresaDto;
   // public categorias: CategoriaDto[];
   // public productos: ProductoDto[];
@@ -28,7 +28,15 @@ export class StoreComponent  extends Digitec implements OnInit {
   ngOnInit(): void {
     if (this.pathName.length > 1) {
       const urlPersonalizada: string = this.pathName.substring(1);
-      // this.obtenerDatosEmpresa(urlPersonalizada);
+      this.obtenerDatosEmpresa(urlPersonalizada);
+    }
+  }
+
+  private obtenerDatosEmpresa(url: string) {
+    console.log(url);
+    this.notFound = true;
+    this.clienteEmpresa = {
+      name : "store 1"
     }
   }
 

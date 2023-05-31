@@ -5,18 +5,18 @@ import { CommonModule } from '@angular/common';
 import { PagesRoutingModule } from './pages-routing.module';
 import { SharedModule } from "../shared/shared.module";
 import { StoreComponent } from './store/store.component';
+import { ExtrapagesModule } from '../extrapages/extrapages.module';
 
 
 @NgModule({
   declarations: [
-
-  
     StoreComponent
   ],
   imports: [
     CommonModule,
     PagesRoutingModule,
     SharedModule,
+    ExtrapagesModule
   ]
 })
 export class PagesModule { }

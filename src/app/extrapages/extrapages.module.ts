@@ -20,6 +20,9 @@ export function playerFactory() {
     CommonModule,
     ExtrapagesRoutingModule,
     LottieModule.forRoot({ player: playerFactory })
+  ],
+  exports : [
+    Page404Component
   ]
 })
 export class ExtrapagesModule { }
