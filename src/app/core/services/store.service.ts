@@ -14,7 +14,7 @@ export class StoreService {
     private http: HttpClient
   ) { }
 
-  public getEnterprise(urlEnterprise: string): Observable<HttpResponse<any>> {
+  public getEnterprise(urlEnterprise: string): any {
     const url = this.rutaBase + this.rutaServicio.apiStore +`/obtener-empresa?url=${urlEnterprise}`;
     return this.http.get<any>(url, {observe: 'response'});
   }
