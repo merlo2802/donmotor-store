@@ -16,22 +16,4 @@ export class FooterComponent implements OnInit {
   ngOnInit(): void {
   }
 
-  /**
-  * SidebarHide modal
-  * @param content modal content
-  */
-   sidebarShow() {
-    document.getElementById('demo-switcher')?.classList.add('show');
-    document.querySelector('.vertical-overlay')?.classList.add('show');
-  }
-
-  /**
-  * SidebarHide modal
-  * @param content modal content
-  */
-  SidebarHide() {
-    document.getElementById('demo-switcher')?.classList.remove('show');
-    document.querySelector('.vertical-overlay')?.classList.remove('show');
-  }
-
 }

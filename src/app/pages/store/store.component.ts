@@ -31,163 +31,162 @@ export class StoreComponent  extends Digitec implements OnInit {
   ngOnInit(): void {
     if (this.pathName.length > 1) {
       const urlEnterprise: string = this.pathName.substring(1);
-      this.getDataEnterprise(urlEnterprise);
+      // this.getDataEnterprise(urlEnterprise);
     }
   }
 
-  private getDataEnterprise(urlEnterprise: string):void {
-    this.storeService.getEnterprise(urlEnterprise).subscribe((response: any) => {
-      if (response.length > 0) {
-        this.empresa = this.toEmpresaDto(response[0]);
-        this.title.setTitle(this.empresa.nombre);
-        const color = this.empresa.configuracionEmpresaDto.colorSeccion ? this.empresa.configuracionEmpresaDto.colorSeccion : '#ed5725';
-        this.meta.updateTag({ content: color }, 'name=theme-color');
-
-        this.eurekaClienteService.obtenerCategorias(this.empresa.id).subscribe((responseC: any[]) => {
-          if (responseC) {
-            this.categorias = this.toCategoriasDto(responseC);
-            this.eurekaClienteService.obtenerProductos(this.empresa.id).subscribe((responseP: any[]) => {
-              if (responseP) {
-                console.log(responseP);
-                this.productos = this.toProductosDto(responseP);
-
-                this.clienteEmpresa = {
-                  empresaDto: this.empresa,
-                  categoriaDtoList: this.categorias,
-                  productoDtoList: this.productos
-                };
-
-                this.encriptarDatos(this.empresa, Llaves.dataEmpresa, Llaves.claveEncriptacion);
-              }
-            }, (error: any) => {
-              console.log('error al obtener los productos de la empresa id', this.empresa.id);
-            });
-          }
-        }, (error: any) => {
-          console.log('error al obtener las categorias de la empresa id', this.empresa.id);
-        });
-      }else {
-        this.notFound = true;
-        console.log('no hay ninuna empresa:  ', urlEnterprise);
-      }
-    }, (error: any) => {
-      console.log('error al obtener la empresa en la ruta ', urlEnterprise);
-    });
-  }
-
-  private obtenerDatosDeEmpresa(urlPersonalizada: string): void {
-    this.eurekaClienteService.obtenerEmpresa(urlPersonalizada).subscribe((response: string | any[]) => {
-      if (response.length > 0) {
-        this.empresa = this.toEmpresaDto(response[0]);
-        this.title.setTitle(this.empresa.nombre);
-        const color = this.empresa.configuracionEmpresaDto.colorSeccion ? this.empresa.configuracionEmpresaDto.colorSeccion : '#ed5725';
-        this.meta.updateTag({ content:  color }, 'name=theme-color');
-
-        this.eurekaClienteService.obtenerCategorias(this.empresa.id).subscribe((responseC: any[]) => {
-          if (responseC) {
-            this.categorias = this.toCategoriasDto(responseC);
-            this.eurekaClienteService.obtenerProductos(this.empresa.id).subscribe((responseP: any[]) => {
-              if (responseP) {
-                console.log(responseP);
-                this.productos = this.toProductosDto(responseP);
-
-                this.clienteEmpresa = {
-                  empresaDto: this.empresa,
-                  categoriaDtoList: this.categorias,
-                  productoDtoList: this.productos
-                };
-
-                this.encriptarDatos(this.empresa, Llaves.dataEmpresa, Llaves.claveEncriptacion);
-              }
-            }, (error: any) => {
-              console.log('error al obtener los productos de la empresa id', this.empresa.id);
-            });
-          }
-        }, (error: any) => {
-          console.log('error al obtener las categorias de la empresa id', this.empresa.id);
-        });
-      }else {
-        this.notFound = true;
-        console.log('no hay ninuna empresa:  ', urlPersonalizada);
-      }
-    }, (error: any) => {
-      console.log('error al obtener la empresa en la ruta ', urlPersonalizada);
-    });
-  }
-
-  public toEmpresaDto(empresa: { id: any; imagenPerfil: any; imagenPortada: any; openTime: any; closeTime: any; colorSeccion: any; colorBotones: any; soloCatalogo: any; nombreCorto: any; telefonoEmpresa: any; lat: any; lng: any; direccion: any; descripcion: any; urlPersonalizada: any; razonSocial: any; nit: any; facebook: any; instagram: any; enviosNacionales: any; enviosInternacionales: any; ciudadDto: any; sectorDto: any; }): EmpresaDto {
-   const configuracionEmpresaDto: ConfiguracionDto = {
-      id: empresa.id,
-      urlLogo: environment.aws+empresa.imagenPerfil,
-      urlPortada: environment.aws+empresa.imagenPortada,
-      horarioInicio: empresa.openTime,
-      horarioCierre: empresa.closeTime,
-      colorSeccion: empresa.colorSeccion,
-      colorBotones: empresa.colorBotones,
-      soloCatalogo: empresa.soloCatalogo,
-    };
-
-   const monedaDto: MonedaDto = {
-      id: 1,
-      nombre: 'Boliviano',
-      simbolo: 'Bs',
-      codigo: 1,
-    };
-
-   const empresaDto: EmpresaDto = {
-        id: empresa.id,
-        nombre : empresa.nombreCorto,
-        numeroWhatsapp: `+${empresa.telefonoEmpresa}`,
-        gpsLatitud: empresa.lat,
-        gpsLongitud: empresa.lng,
-        direccion: empresa.direccion,
-        slogan: empresa.descripcion,
-
-        urlPersonalizada: empresa.urlPersonalizada,
-        razonSocial: empresa.razonSocial,
-        nit: empresa.nit,
-        telefono: empresa.telefonoEmpresa,
-        urlFacebook: empresa.facebook,
-        urlInstagram: empresa.instagram,
-        enviosNacionales: empresa.enviosNacionales,
-        enviosInternacionales: empresa.enviosInternacionales,
-        ciudadDto: empresa.ciudadDto,
-        sectorDto: empresa.sectorDto,
-        monedaDto,
-        configuracionEmpresaDto,
-    };
-   return empresaDto;
-  }
-
-  public toCategoriasDto(categorias: any[]): CategoriaDto[] {
-    const categoriasList: CategoriaDto[] = [];
-    categorias.forEach(categoria => {
-      const categoriaDto: CategoriaDto = {
-        id: categoria.id,
-        nombre: categoria.nombre,
-        idEmpresa: categoria.idEmpresa,
-        descripcion: '',
-       };
-      categoriasList.push(categoriaDto);
-    });
-    return categoriasList;
-   }
-
-   public toProductosDto(productos: any[]): ProductoDto[] {
-    console.log(productos)
-    const productosList: ProductoDto[] = [];
-    productos.forEach(producto => {
-       const productoDto: ProductoDto = {
-        id: producto.id,
-        nombre: producto.nombre,
-        descripcion: producto.descripcion,
-        precio: producto.precio,
-        idCategoria: producto.idCategoria,
-        cantidad: producto.stock !== undefined ? producto.stock : null,
-        imagen: producto.imagen ? environment.aws+producto.imagen : '../../../assets/images/producto.png'
-       };
-       productosList.push(productoDto);
-     });
-    return productosList;
-   }
+  // private getDataEnterprise(urlEnterprise: string):void {
+  //   this.storeService.getEnterprise(urlEnterprise).subscribe((response: any) => {
+  //     if (response.length > 0) {
+  //       this.empresa = this.toEmpresaDto(response[0]);
+  //       this.title.setTitle(this.empresa.nombre);
+  //       const color = this.empresa.configuracionEmpresaDto.colorSeccion ? this.empresa.configuracionEmpresaDto.colorSeccion : '#ed5725';
+  //       this.meta.updateTag({ content: color }, 'name=theme-color');
+  //
+  //       this.eurekaClienteService.obtenerCategorias(this.empresa.id).subscribe((responseC: any[]) => {
+  //         if (responseC) {
+  //           this.categorias = this.toCategoriasDto(responseC);
+  //           this.eurekaClienteService.obtenerProductos(this.empresa.id).subscribe((responseP: any[]) => {
+  //             if (responseP) {
+  //               console.log(responseP);
+  //               this.productos = this.toProductosDto(responseP);
+  //
+  //               this.clienteEmpresa = {
+  //                 empresaDto: this.empresa,
+  //                 categoriaDtoList: this.categorias,
+  //                 productoDtoList: this.productos
+  //               };
+  //
+  //               this.encriptarDatos(this.empresa, Llaves.dataEmpresa, Llaves.claveEncriptacion);
+  //             }
+  //           }, (error: any) => {
+  //             console.log('error al obtener los productos de la empresa id', this.empresa.id);
+  //           });
+  //         }
+  //       }, (error: any) => {
+  //         console.log('error al obtener las categorias de la empresa id', this.empresa.id);
+  //       });
+  //     }else {
+  //       this.notFound = true;
+  //       console.log('no hay ninuna empresa:  ', urlEnterprise);
+  //     }
+  //   }, (error: any) => {
+  //     console.log('error al obtener la empresa en la ruta ', urlEnterprise);
+  //   });
+  // }
+  //
+  // private obtenerDatosDeEmpresa(urlPersonalizada: string): void {
+  //   this.eurekaClienteService.obtenerEmpresa(urlPersonalizada).subscribe((response: string | any[]) => {
+  //     if (response.length > 0) {
+  //       this.empresa = this.toEmpresaDto(response[0]);
+  //       this.title.setTitle(this.empresa.nombre);
+  //       const color = this.empresa.configuracionEmpresaDto.colorSeccion ? this.empresa.configuracionEmpresaDto.colorSeccion : '#ed5725';
+  //       this.meta.updateTag({ content:  color }, 'name=theme-color');
+  //
+  //       this.eurekaClienteService.obtenerCategorias(this.empresa.id).subscribe((responseC: any[]) => {
+  //         if (responseC) {
+  //           this.categorias = this.toCategoriasDto(responseC);
+  //           this.eurekaClienteService.obtenerProductos(this.empresa.id).subscribe((responseP: any[]) => {
+  //             if (responseP) {
+  //               console.log(responseP);
+  //               this.productos = this.toProductosDto(responseP);
+  //
+  //               this.clienteEmpresa = {
+  //                 empresaDto: this.empresa,
+  //                 categoriaDtoList: this.categorias,
+  //                 productoDtoList: this.productos
+  //               };
+  //
+  //               this.encriptarDatos(this.empresa, Llaves.dataEmpresa, Llaves.claveEncriptacion);
+  //             }
+  //           }, (error: any) => {
+  //             console.log('error al obtener los productos de la empresa id', this.empresa.id);
+  //           });
+  //         }
+  //       }, (error: any) => {
+  //         console.log('error al obtener las categorias de la empresa id', this.empresa.id);
+  //       });
+  //     }else {
+  //       this.notFound = true;
+  //       console.log('no hay ninuna empresa:  ', urlPersonalizada);
+  //     }
+  //   }, (error: any) => {
+  //     console.log('error al obtener la empresa en la ruta ', urlPersonalizada);
+  //   });
+  // }
+  //
+  // public toEmpresaDto(empresa: { id: any; imagenPerfil: any; imagenPortada: any; openTime: any; closeTime: any; colorSeccion: any; colorBotones: any; soloCatalogo: any; nombreCorto: any; telefonoEmpresa: any; lat: any; lng: any; direccion: any; descripcion: any; urlPersonalizada: any; razonSocial: any; nit: any; facebook: any; instagram: any; enviosNacionales: any; enviosInternacionales: any; ciudadDto: any; sectorDto: any; }): EmpresaDto {
+  //  const configuracionEmpresaDto: ConfiguracionDto = {
+  //     id: empresa.id,
+  //     urlLogo: environment.aws+empresa.imagenPerfil,
+  //     urlPortada: environment.aws+empresa.imagenPortada,
+  //     horarioInicio: empresa.openTime,
+  //     horarioCierre: empresa.closeTime,
+  //     colorSeccion: empresa.colorSeccion,
+  //     colorBotones: empresa.colorBotones,
+  //     soloCatalogo: empresa.soloCatalogo,
+  //   };
+  //
+  //  const monedaDto: MonedaDto = {
+  //     id: 1,
+  //     nombre: 'Boliviano',
+  //     simbolo: 'Bs',
+  //     codigo: 1,
+  //   };
+  //
+  //  const empresaDto: EmpresaDto = {
+  //       id: empresa.id,
+  //       nombre : empresa.nombreCorto,
+  //       numeroWhatsapp: `+${empresa.telefonoEmpresa}`,
+  //       gpsLatitud: empresa.lat,
+  //       gpsLongitud: empresa.lng,
+  //       direccion: empresa.direccion,
+  //       slogan: empresa.descripcion,
+  //
+  //       urlPersonalizada: empresa.urlPersonalizada,
+  //       razonSocial: empresa.razonSocial,
+  //       nit: empresa.nit,
+  //       telefono: empresa.telefonoEmpresa,
+  //       urlFacebook: empresa.facebook,
+  //       urlInstagram: empresa.instagram,
+  //       enviosNacionales: empresa.enviosNacionales,
+  //       enviosInternacionales: empresa.enviosInternacionales,
+  //       ciudadDto: empresa.ciudadDto,
+  //       sectorDto: empresa.sectorDto,
+  //       monedaDto,
+  //       configuracionEmpresaDto,
+  //   };
+  //  return empresaDto;
+  // }
+  //
+  // public toCategoriasDto(categorias: any[]): CategoriaDto[] {
+  //   const categoriasList: CategoriaDto[] = [];
+  //   categorias.forEach(categoria => {
+  //     const categoriaDto: CategoriaDto = {
+  //       id: categoria.id,
+  //       nombre: categoria.nombre,
+  //       idEmpresa: categoria.idEmpresa,
+  //       descripcion: '',
+  //      };
+  //     categoriasList.push(categoriaDto);
+  //   });
+  //   return categoriasList;
+  //  }
+  // public toProductosDto(productos: any[]): ProductoDto[] {
+  //   console.log(productos)
+  //   const productosList: ProductoDto[] = [];
+  //   productos.forEach(producto => {
+  //      const productoDto: ProductoDto = {
+  //       id: producto.id,
+  //       nombre: producto.nombre,
+  //       descripcion: producto.descripcion,
+  //       precio: producto.precio,
+  //       idCategoria: producto.idCategoria,
+  //       cantidad: producto.stock !== undefined ? producto.stock : null,
+  //       imagen: producto.imagen ? environment.aws+producto.imagen : '../../../assets/images/producto.png'
+  //      };
+  //      productosList.push(productoDto);
+  //    });
+  //   return productosList;
+  //  }
 }
